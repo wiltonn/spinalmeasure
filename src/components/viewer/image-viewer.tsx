@@ -23,51 +23,6 @@ export function ImageViewer() {
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
 
-  // Load and display image
-  useEffect(() => {
-    if (!currentStudy?.imageUrl || !canvasRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    setImageLoaded(false)
-    setImageError(null)
-
-    // Load image
-    const img = new Image()
-    img.crossOrigin = 'anonymous' // Handle CORS for medical images
-    
-    img.onload = () => {
-      imageRef.current = img
-      
-      // Set canvas size to match container
-      const container = containerRef.current
-      if (container) {
-        canvas.width = container.clientWidth
-        canvas.height = container.clientHeight
-      }
-      
-      drawImage()
-      setImageLoaded(true)
-    }
-
-    img.onerror = () => {
-      setImageError('Failed to load medical image. Please check the file format and try again.')
-    }
-
-    img.src = currentStudy.imageUrl
-  }, [currentStudy?.imageUrl])
-
-  // Redraw image when viewer config changes
-  useEffect(() => {
-    if (imageLoaded) {
-      drawImage()
-    }
-  }, [viewerConfig.zoom, viewerConfig.pan, viewerConfig.brightness, viewerConfig.contrast, imageLoaded])
-
   const drawImage = useCallback(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
@@ -106,6 +61,51 @@ export function ImageViewer() {
     // Reset filter for other drawing operations
     ctx.filter = 'none'
   }, [viewerConfig])
+
+  // Load and display image
+  useEffect(() => {
+    if (!currentStudy?.imageUrl || !canvasRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    setImageLoaded(false)
+    setImageError(null)
+
+    // Load image
+    const img = new Image()
+    img.crossOrigin = 'anonymous' // Handle CORS for medical images
+    
+    img.onload = () => {
+      imageRef.current = img
+      
+      // Set canvas size to match container
+      const container = containerRef.current
+      if (container) {
+        canvas.width = container.clientWidth
+        canvas.height = container.clientHeight
+      }
+      
+      drawImage()
+      setImageLoaded(true)
+    }
+
+    img.onerror = () => {
+      setImageError('Failed to load medical image. Please check the file format and try again.')
+    }
+
+    img.src = currentStudy.imageUrl
+  }, [currentStudy?.imageUrl, drawImage])
+
+  // Redraw image when viewer config changes
+  useEffect(() => {
+    if (imageLoaded) {
+      drawImage()
+    }
+  }, [viewerConfig.zoom, viewerConfig.pan, viewerConfig.brightness, viewerConfig.contrast, imageLoaded, drawImage])
 
   // Handle mouse wheel zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -233,7 +233,6 @@ export function ImageViewer() {
               {imageLoaded && viewerConfig.showMeasurements && (
                 <MeasurementOverlay 
                   canvasRef={canvasRef}
-                  imageRef={imageRef}
                   viewerConfig={viewerConfig}
                 />
               )}

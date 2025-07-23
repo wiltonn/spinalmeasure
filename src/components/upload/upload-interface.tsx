@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { Upload, FileImage, AlertCircle, CheckCircle, X } from 'lucide-react'
+import { useDropzone, FileRejection } from 'react-dropzone'
+import { Upload, FileImage, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -56,10 +56,9 @@ function validateFile(file: File): ValidationResult {
 
 export function UploadInterface() {
   const { uploadQueue, addToUploadQueue, removeFromUploadQueue } = useAppStore()
-  const [dragActive, setDragActive] = useState(false)
   const [validationResults, setValidationResults] = useState<Record<string, ValidationResult>>({})
 
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     // Handle rejected files
     if (rejectedFiles.length > 0) {
       console.warn('Some files were rejected:', rejectedFiles)
@@ -99,10 +98,6 @@ export function UploadInterface() {
     accept: ACCEPTED_FORMATS,
     maxSize: MAX_FILE_SIZE,
     maxFiles: MAX_FILES - uploadQueue.length,
-    onDragEnter: () => setDragActive(true),
-    onDragLeave: () => setDragActive(false),
-    onDropAccepted: () => setDragActive(false),
-    onDropRejected: () => setDragActive(false),
   })
 
   const handleRemoveFile = (fileId: string) => {
@@ -218,7 +213,7 @@ export function UploadInterface() {
       {isProcessing && <ProcessingFeedback />}
 
       {/* Validation Messages */}
-      {Object.entries(validationResults).some(([_, result]) => result.errors.length > 0) && (
+      {Object.entries(validationResults).some(([, result]) => result.errors.length > 0) && (
         <div className="bg-medical-danger/10 border border-medical-danger/20 rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-2">
             <AlertCircle className="w-5 h-5 text-medical-danger" />
@@ -226,7 +221,7 @@ export function UploadInterface() {
           </div>
           <div className="space-y-1 text-sm">
             {Object.entries(validationResults)
-              .filter(([_, result]) => result.errors.length > 0)
+              .filter(([, result]) => result.errors.length > 0)
               .map(([fileName, result]) => (
                 <div key={fileName} className="ml-7">
                   <span className="font-medium">{fileName}:</span>

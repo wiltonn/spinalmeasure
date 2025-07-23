@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { useAppStore } from '@/store/app-store'
 import type { ViewerConfig, Measurement } from '@/store/app-store'
 
 interface MeasurementOverlayProps {
-  canvasRef: React.RefObject<HTMLCanvasElement>
-  imageRef: React.RefObject<HTMLImageElement>
+  canvasRef: React.RefObject<HTMLCanvasElement | null>
   viewerConfig: ViewerConfig
 }
 
@@ -17,40 +16,33 @@ interface Point {
 
 export function MeasurementOverlay({
   canvasRef,
-  imageRef,
   viewerConfig
 }: MeasurementOverlayProps) {
   const { measurements, currentStudy } = useAppStore()
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null)
-  const [adjustingMeasurement, setAdjustingMeasurement] = useState<string | null>(null)
-  const [dragStart, setDragStart] = useState<Point>({ x: 0, y: 0 })
 
-  // Draw measurements overlay
-  const drawMeasurements = useCallback(() => {
-    const overlayCanvas = overlayCanvasRef.current
-    const mainCanvas = canvasRef.current
-    const ctx = overlayCanvas?.getContext('2d')
+  const transformPoint = useCallback((point: Point, config: ViewerConfig): Point => {
+    // This would normally transform image coordinates to canvas coordinates
+    // based on the current zoom and pan settings
+    // For now, we'll assume points are already in canvas coordinates
     
-    if (!overlayCanvas || !mainCanvas || !ctx) return
+    const canvas = canvasRef.current
+    if (!canvas) return point
 
-    // Match overlay canvas size to main canvas
-    overlayCanvas.width = mainCanvas.width
-    overlayCanvas.height = mainCanvas.height
+    // Apply zoom and pan transformations
+    return {
+      x: point.x * config.zoom + config.pan.x,
+      y: point.y * config.zoom + config.pan.y
+    }
+  }, [canvasRef])
 
-    // Clear overlay
-    ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+  const getConfidenceColor = useCallback((confidence: number): string => {
+    if (confidence >= 90) return '#10B981' // High confidence - green
+    if (confidence >= 70) return '#F59E0B' // Medium confidence - amber
+    return '#EF4444' // Low confidence - red
+  }, [])
 
-    // Get relevant measurements for current study
-    const studyMeasurements = measurements.filter(m => m.studyId === currentStudy?.id)
-    
-    if (studyMeasurements.length === 0) return
-
-    studyMeasurements.forEach((measurement) => {
-      drawMeasurement(ctx, measurement)
-    })
-  }, [measurements, currentStudy?.id, viewerConfig])
-
-  const drawMeasurement = (ctx: CanvasRenderingContext2D, measurement: Measurement) => {
+  const drawMeasurement = useCallback((ctx: CanvasRenderingContext2D, measurement: Measurement) => {
     const { vertebraePoints, angleValue, confidence, curveType } = measurement
     
     if (vertebraePoints.length < 4) return // Need at least 4 points for Cobb angle
@@ -185,7 +177,7 @@ export function MeasurementOverlay({
     )
 
     // Draw adjustment handles
-    transformedPoints.forEach((point, index) => {
+    transformedPoints.forEach((point) => {
       ctx.fillStyle = curveColor
       ctx.beginPath()
       ctx.arc(point.x, point.y, 4, 0, Math.PI * 2)
@@ -198,39 +190,36 @@ export function MeasurementOverlay({
     })
 
     ctx.restore()
-  }
+  }, [viewerConfig, transformPoint, getConfidenceColor])
 
-  const transformPoint = (point: Point, config: ViewerConfig): Point => {
-    // This would normally transform image coordinates to canvas coordinates
-    // based on the current zoom and pan settings
-    // For now, we'll assume points are already in canvas coordinates
+  // Draw measurements overlay
+  const drawMeasurements = useCallback(() => {
+    const overlayCanvas = overlayCanvasRef.current
+    const mainCanvas = canvasRef.current
+    const ctx = overlayCanvas?.getContext('2d')
     
-    const canvas = canvasRef.current
-    if (!canvas) return point
+    if (!overlayCanvas || !mainCanvas || !ctx) return
 
-    // Apply zoom and pan transformations
-    return {
-      x: point.x * config.zoom + config.pan.x,
-      y: point.y * config.zoom + config.pan.y
-    }
-  }
+    // Match overlay canvas size to main canvas
+    overlayCanvas.width = mainCanvas.width
+    overlayCanvas.height = mainCanvas.height
 
-  const getConfidenceColor = (confidence: number): string => {
-    if (confidence >= 90) return '#10B981' // High confidence - green
-    if (confidence >= 70) return '#F59E0B' // Medium confidence - amber
-    return '#EF4444' // Low confidence - red
-  }
+    // Clear overlay
+    ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height)
+
+    // Get relevant measurements for current study
+    const studyMeasurements = measurements.filter(m => m.studyId === currentStudy?.id)
+    
+    if (studyMeasurements.length === 0) return
+
+    studyMeasurements.forEach((measurement) => {
+      drawMeasurement(ctx, measurement)
+    })
+  }, [measurements, currentStudy?.id, canvasRef, drawMeasurement])
 
   // Handle mouse interactions for measurement adjustment
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = () => {
     // Implementation for dragging measurement points
-    const rect = overlayCanvasRef.current?.getBoundingClientRect()
-    if (!rect) return
-
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-
-    // Find if clicking on a measurement handle
     // This would check if the mouse is near any measurement points
     // and start dragging mode
   }

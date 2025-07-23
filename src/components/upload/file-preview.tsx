@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { FileImage, X, AlertTriangle, CheckCircle, Clock, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -82,9 +83,11 @@ export function FilePreview({ file, validation, onRemove }: FilePreviewProps) {
         {/* File Preview/Icon */}
         <div className="flex-shrink-0">
           {imagePreview ? (
-            <img
+            <Image
               src={imagePreview}
               alt={`Preview of ${file.file.name}`}
+              width={64}
+              height={64}
               className="w-16 h-16 object-cover rounded border"
             />
           ) : (

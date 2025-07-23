@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Zap, Clock, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Zap, Clock, CheckCircle } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
 import { cn } from '@/lib/utils'
 

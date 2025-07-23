@@ -84,8 +84,6 @@ export function SidePanel() {
   }
 
   const studyMeasurements = measurements.filter(m => m.studyId === currentStudy.id)
-  const primaryMeasurement = studyMeasurements.find(m => m.curveType === 'primary')
-  const secondaryMeasurement = studyMeasurements.find(m => m.curveType === 'secondary')
   const maxAngle = Math.max(...studyMeasurements.map(m => m.angleValue), 0)
   const severityInfo = severityLevels[currentStudy.severity] || severityLevels.normal
 

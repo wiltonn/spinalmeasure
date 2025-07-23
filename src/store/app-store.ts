@@ -82,7 +82,7 @@ interface AppState {
   // UI State
   sidebarCollapsed: boolean
   setSidebarCollapsed: (collapsed: boolean) => void
-  activePanel: 'upload' | 'analysis' | 'reports' | 'history' | 'admin'
+  activePanel: 'upload' | 'analysis' | 'reports' | 'history' | 'admin' | 'settings'
   setActivePanel: (panel: AppState['activePanel']) => void
   
   // Notifications
@@ -103,7 +103,7 @@ const defaultViewerConfig: ViewerConfig = {
 
 export const useAppStore = create<AppState>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       // Authentication & User
       user: null,
       setUser: (user) => set({ user }),

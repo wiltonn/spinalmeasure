@@ -4,13 +4,11 @@ import {
   ZoomIn, 
   ZoomOut, 
   RotateCcw,
-  Move,
   Maximize2,
   Sun,
   Contrast,
   Eye,
   EyeOff,
-  Grid,
   Ruler
 } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
