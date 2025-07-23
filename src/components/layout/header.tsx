@@ -1,6 +1,7 @@
 'use client'
 
-import { Bell, Settings, User, ChevronDown } from 'lucide-react'
+import { Bell, Settings } from 'lucide-react'
+import { UserButton } from '@clerk/nextjs'
 import { useAppStore } from '@/store/app-store'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
@@ -19,10 +20,6 @@ export function Header() {
     router.push('/settings')
   }
 
-  const handleUserMenuClick = () => {
-    // TODO: Open user menu dropdown with profile options
-    console.log('User menu clicked')
-  }
 
   return (
     <header className="h-16 border-b border-border bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -76,16 +73,7 @@ export function Header() {
                   {user?.role || 'Unknown Role'}
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                className="flex items-center space-x-2 p-2"
-                onClick={handleUserMenuClick}
-              >
-                <div className="w-8 h-8 bg-medical-primary rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-white" />
-                </div>
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              </Button>
+              <UserButton afterSignOutUrl="/" />
             </div>
           </div>
         </div>
