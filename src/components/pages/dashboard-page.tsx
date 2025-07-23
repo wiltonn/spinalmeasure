@@ -8,8 +8,10 @@ import {
   Clock,
   AlertTriangle
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useAppStore } from '@/store/app-store'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
 interface StatCard {
@@ -21,7 +23,20 @@ interface StatCard {
 }
 
 export function DashboardPage() {
+  const router = useRouter()
   const { user, uploadQueue } = useAppStore()
+
+  const handleUploadClick = () => {
+    router.push('/upload')
+  }
+
+  const handleViewReportsClick = () => {
+    router.push('/reports')
+  }
+
+  const handleAnalyticsClick = () => {
+    router.push('/analytics')
+  }
 
   const stats: StatCard[] = [
     {
@@ -127,10 +142,10 @@ export function DashboardPage() {
           </div>
           
           <div className="flex items-center space-x-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleViewReportsClick}>
               View Reports
             </Button>
-            <Button variant="medical">
+            <Button variant="medical" onClick={handleUploadClick}>
               Upload New Study
             </Button>
           </div>
@@ -141,45 +156,47 @@ export function DashboardPage() {
           {stats.map((stat) => {
             const Icon = stat.icon
             return (
-              <div key={stat.label} className="bg-card border rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {stat.label}
-                    </p>
-                    <p className="text-2xl font-bold text-foreground mt-2">
-                      {stat.value}
-                    </p>
-                    {stat.change && (
-                      <p className={cn(
-                        "text-sm mt-1 flex items-center space-x-1",
-                        getTrendColor(stat.trend)
-                      )}>
-                        <span>{stat.change}</span>
-                        <span className="text-muted-foreground">vs last week</span>
+              <Card key={stat.label}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {stat.label}
                       </p>
-                    )}
+                      <p className="text-2xl font-bold text-foreground mt-2">
+                        {stat.value}
+                      </p>
+                      {stat.change && (
+                        <p className={cn(
+                          "text-sm mt-1 flex items-center space-x-1",
+                          getTrendColor(stat.trend)
+                        )}>
+                          <span>{stat.change}</span>
+                          <span className="text-muted-foreground">vs last week</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-12 h-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-medical-primary" />
+                    </div>
                   </div>
-                  <div className="w-12 h-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-medical-primary" />
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )
           })}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Activity */}
-          <div className="lg:col-span-2 bg-card border rounded-lg">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-lg font-semibold text-foreground">Recent Activity</h2>
-              <p className="text-sm text-muted-foreground mt-1">
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>
                 Latest system activities and processing updates
-              </p>
-            </div>
+              </CardDescription>
+            </CardHeader>
             
-            <div className="p-6">
+            <CardContent>
               <div className="space-y-4">
                 {recentActivity.map((activity) => {
                   const Icon = getActivityIcon(activity.type)
@@ -209,16 +226,16 @@ export function DashboardPage() {
                   )
                 })}
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* System Status */}
-          <div className="bg-card border rounded-lg">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-lg font-semibold text-foreground">System Status</h2>
-            </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>System Status</CardTitle>
+            </CardHeader>
             
-            <div className="p-6 space-y-4">
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">AI Model</span>
                 <div className="flex items-center space-x-2">
@@ -249,31 +266,35 @@ export function DashboardPage() {
                   {uploadQueue.filter(f => f.status === 'processing').length} files
                 </span>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-card border rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2">
+            <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2" onClick={handleUploadClick}>
               <Upload className="w-6 h-6" />
               <span>Upload New Study</span>
             </Button>
             
-            <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2">
+            <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2" onClick={handleViewReportsClick}>
               <FileImage className="w-6 h-6" />
               <span>View Reports</span>
             </Button>
             
-            <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2">
+            <Button variant="outline" className="h-24 flex flex-col items-center justify-center space-y-2" onClick={handleAnalyticsClick}>
               <TrendingUp className="w-6 h-6" />
               <span>Analytics</span>
             </Button>
           </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

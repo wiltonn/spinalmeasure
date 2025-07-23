@@ -8,35 +8,49 @@ import {
   Settings, 
   Shield,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  LayoutDashboard
 } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const navigationItems = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    href: '/dashboard',
+    description: 'Main dashboard overview'
+  },
   {
     id: 'upload',
     label: 'Upload',
     icon: Upload,
+    href: '/upload',
     description: 'Upload new X-ray images'
   },
   {
     id: 'analysis',
     label: 'Analysis',
     icon: Search,
+    href: '/analysis',
     description: 'View and analyze measurements'
   },
   {
     id: 'reports',
     label: 'Reports',
     icon: FileImage,
+    href: '/reports',
     description: 'Generate and view reports'
   },
   {
     id: 'history',
     label: 'History',
     icon: History,
+    href: '/history',
     description: 'View patient study history'
   }
 ] as const
@@ -46,12 +60,14 @@ const adminItems = [
     id: 'admin',
     label: 'Admin',
     icon: Shield,
+    href: '/admin',
     description: 'Administrative dashboard'
   },
   {
     id: 'settings',
     label: 'Settings',
     icon: Settings,
+    href: '/settings',
     description: 'Application settings'
   }
 ] as const
@@ -59,12 +75,11 @@ const adminItems = [
 export function Sidebar() {
   const { 
     sidebarCollapsed, 
-    setSidebarCollapsed, 
-    activePanel, 
-    setActivePanel,
+    setSidebarCollapsed,
     user 
   } = useAppStore()
 
+  const pathname = usePathname()
   const isAdmin = user?.role === 'Admin'
 
   return (
@@ -95,31 +110,31 @@ export function Sidebar() {
           <div className="space-y-2">
             {navigationItems.map((item) => {
               const Icon = item.icon
-              const isActive = activePanel === item.id
+              const isActive = pathname === item.href
               
               return (
-                <Button
-                  key={item.id}
-                  variant={isActive ? "default" : "ghost"}
-                  className={cn(
-                    "w-full justify-start h-11 px-3",
-                    sidebarCollapsed ? "px-0 justify-center" : "",
-                    isActive 
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
-                      : "hover:bg-sidebar-accent text-sidebar-foreground"
-                  )}
-                  onClick={() => setActivePanel(item.id)}
-                  aria-label={sidebarCollapsed ? `${item.label}: ${item.description}` : undefined}
-                  title={sidebarCollapsed ? item.description : undefined}
-                >
-                  <Icon className={cn(
-                    "h-5 w-5",
-                    sidebarCollapsed ? "" : "mr-3"
-                  )} />
-                  {!sidebarCollapsed && (
-                    <span className="text-sm font-medium">{item.label}</span>
-                  )}
-                </Button>
+                <Link key={item.id} href={item.href}>
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    className={cn(
+                      "w-full justify-start h-11 px-3",
+                      sidebarCollapsed ? "px-0 justify-center" : "",
+                      isActive 
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
+                        : "hover:bg-sidebar-accent text-sidebar-foreground"
+                    )}
+                    aria-label={sidebarCollapsed ? `${item.label}: ${item.description}` : undefined}
+                    title={sidebarCollapsed ? item.description : undefined}
+                  >
+                    <Icon className={cn(
+                      "h-5 w-5",
+                      sidebarCollapsed ? "" : "mr-3"
+                    )} />
+                    {!sidebarCollapsed && (
+                      <span className="text-sm font-medium">{item.label}</span>
+                    )}
+                  </Button>
+                </Link>
               )
             })}
           </div>
@@ -135,31 +150,31 @@ export function Sidebar() {
               <div className="space-y-2">
                 {adminItems.map((item) => {
                   const Icon = item.icon
-                  const isActive = activePanel === item.id
+                  const isActive = pathname === item.href
                   
                   return (
-                    <Button
-                      key={item.id}
-                      variant={isActive ? "default" : "ghost"}
-                      className={cn(
-                        "w-full justify-start h-11 px-3",
-                        sidebarCollapsed ? "px-0 justify-center" : "",
-                        isActive 
-                          ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
-                          : "hover:bg-sidebar-accent text-sidebar-foreground"
-                      )}
-                      onClick={() => setActivePanel(item.id)}
-                      aria-label={sidebarCollapsed ? `${item.label}: ${item.description}` : undefined}
-                      title={sidebarCollapsed ? item.description : undefined}
-                    >
-                      <Icon className={cn(
-                        "h-5 w-5",
-                        sidebarCollapsed ? "" : "mr-3"
-                      )} />
-                      {!sidebarCollapsed && (
-                        <span className="text-sm font-medium">{item.label}</span>
-                      )}
-                    </Button>
+                    <Link key={item.id} href={item.href}>
+                      <Button
+                        variant={isActive ? "default" : "ghost"}
+                        className={cn(
+                          "w-full justify-start h-11 px-3",
+                          sidebarCollapsed ? "px-0 justify-center" : "",
+                          isActive 
+                            ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
+                            : "hover:bg-sidebar-accent text-sidebar-foreground"
+                        )}
+                        aria-label={sidebarCollapsed ? `${item.label}: ${item.description}` : undefined}
+                        title={sidebarCollapsed ? item.description : undefined}
+                      >
+                        <Icon className={cn(
+                          "h-5 w-5",
+                          sidebarCollapsed ? "" : "mr-3"
+                        )} />
+                        {!sidebarCollapsed && (
+                          <span className="text-sm font-medium">{item.label}</span>
+                        )}
+                      </Button>
+                    </Link>
                   )
                 })}
               </div>

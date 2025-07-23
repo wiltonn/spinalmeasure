@@ -5,6 +5,7 @@ import { useDropzone, FileRejection } from 'react-dropzone'
 import { Upload, FileImage, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
 import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { cn } from '@/lib/utils'
 import { FilePreview } from './file-preview'
 import { ProcessingFeedback } from './processing-feedback'
@@ -214,12 +215,11 @@ export function UploadInterface() {
 
       {/* Validation Messages */}
       {Object.entries(validationResults).some(([, result]) => result.errors.length > 0) && (
-        <div className="bg-medical-danger/10 border border-medical-danger/20 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <AlertCircle className="w-5 h-5 text-medical-danger" />
-            <h4 className="font-medium text-medical-danger">Validation Errors</h4>
-          </div>
-          <div className="space-y-1 text-sm">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Validation Errors</AlertTitle>
+          <AlertDescription>
+            <div className="space-y-1 text-sm">
             {Object.entries(validationResults)
               .filter(([, result]) => result.errors.length > 0)
               .map(([fileName, result]) => (
@@ -232,8 +232,9 @@ export function UploadInterface() {
                   </ul>
                 </div>
               ))}
-          </div>
-        </div>
+            </div>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   )

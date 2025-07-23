@@ -3,10 +3,26 @@
 import { Bell, Settings, User, ChevronDown } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
 import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 export function Header() {
   const { user, notifications } = useAppStore()
+  const router = useRouter()
   const unreadNotifications = notifications.filter(n => !n.read).length
+
+  const handleNotificationsClick = () => {
+    // TODO: Open notifications panel or navigate to notifications page
+    console.log('Notifications clicked')
+  }
+
+  const handleSettingsClick = () => {
+    router.push('/settings')
+  }
+
+  const handleUserMenuClick = () => {
+    // TODO: Open user menu dropdown with profile options
+    console.log('User menu clicked')
+  }
 
   return (
     <header className="h-16 border-b border-border bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -28,6 +44,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             className="relative"
+            onClick={handleNotificationsClick}
             aria-label={`Notifications ${unreadNotifications > 0 ? `(${unreadNotifications} unread)` : ''}`}
           >
             <Bell className="h-5 w-5" />
@@ -42,6 +59,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
+            onClick={handleSettingsClick}
             aria-label="Settings"
           >
             <Settings className="h-5 w-5" />
@@ -61,6 +79,7 @@ export function Header() {
               <Button
                 variant="ghost"
                 className="flex items-center space-x-2 p-2"
+                onClick={handleUserMenuClick}
               >
                 <div className="w-8 h-8 bg-medical-primary rounded-full flex items-center justify-center">
                   <User className="h-4 w-4 text-white" />

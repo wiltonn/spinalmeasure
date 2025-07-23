@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { useAppStore } from '@/store/app-store'
 import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
 import { cn } from '@/lib/utils'
 
 export function ViewerControls() {
@@ -35,14 +36,12 @@ export function ViewerControls() {
     })
   }
 
-  const handleBrightnessChange = (delta: number) => {
-    const newBrightness = Math.max(20, Math.min(200, viewerConfig.brightness + delta))
-    updateViewerConfig({ brightness: newBrightness })
+  const handleBrightnessChange = (value: number[]) => {
+    updateViewerConfig({ brightness: value[0] })
   }
 
-  const handleContrastChange = (delta: number) => {
-    const newContrast = Math.max(20, Math.min(200, viewerConfig.contrast + delta))
-    updateViewerConfig({ contrast: newContrast })
+  const handleContrastChange = (value: number[]) => {
+    updateViewerConfig({ contrast: value[0] })
   }
 
   const toggleMeasurements = () => {
@@ -111,56 +110,40 @@ export function ViewerControls() {
 
         {/* Center - Image Adjustments */}
         <div className="flex items-center space-x-1">
-          <div className="flex items-center space-x-1 border-r border-border pr-3 mr-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleBrightnessChange(-10)}
-              className="h-8 w-8 p-0"
-              aria-label="Decrease brightness"
-            >
-              <Sun className="h-4 w-4 opacity-60" />
-            </Button>
-            
-            <div className="text-xs text-muted-foreground min-w-12 text-center">
-              B: {viewerConfig.brightness}%
+          <div className="flex items-center space-x-2 border-r border-border pr-3 mr-3">
+            <Sun className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center space-x-2">
+              <Slider
+                value={[viewerConfig.brightness]}
+                onValueChange={handleBrightnessChange}
+                min={20}
+                max={200}
+                step={5}
+                className="w-16"
+                aria-label="Brightness"
+              />
+              <span className="text-xs text-muted-foreground min-w-8 text-center">
+                {viewerConfig.brightness}%
+              </span>
             </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleBrightnessChange(10)}
-              className="h-8 w-8 p-0"
-              aria-label="Increase brightness"
-            >
-              <Sun className="h-4 w-4" />
-            </Button>
           </div>
 
-          <div className="flex items-center space-x-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleContrastChange(-10)}
-              className="h-8 w-8 p-0"
-              aria-label="Decrease contrast"
-            >
-              <Contrast className="h-4 w-4 opacity-60" />
-            </Button>
-            
-            <div className="text-xs text-muted-foreground min-w-12 text-center">
-              C: {viewerConfig.contrast}%
+          <div className="flex items-center space-x-2">
+            <Contrast className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center space-x-2">
+              <Slider
+                value={[viewerConfig.contrast]}
+                onValueChange={handleContrastChange}
+                min={20}
+                max={200}
+                step={5}
+                className="w-16"
+                aria-label="Contrast"
+              />
+              <span className="text-xs text-muted-foreground min-w-8 text-center">
+                {viewerConfig.contrast}%
+              </span>
             </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleContrastChange(10)}
-              className="h-8 w-8 p-0"
-              aria-label="Increase contrast"
-            >
-              <Contrast className="h-4 w-4" />
-            </Button>
           </div>
         </div>
 

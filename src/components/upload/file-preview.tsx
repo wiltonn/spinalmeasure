@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { FileImage, X, AlertTriangle, CheckCircle, Clock, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { UploadFile } from '@/store/app-store'
 
@@ -74,12 +76,12 @@ export function FilePreview({ file, validation, onRemove }: FilePreviewProps) {
   const hasWarnings = validation && validation.warnings.length > 0
 
   return (
-    <div className={cn(
-      "border rounded-lg p-4 bg-card",
+    <Card className={cn(
       hasErrors && "border-medical-danger bg-medical-danger/5",
       file.status === 'complete' && "border-medical-success bg-medical-success/5"
     )}>
-      <div className="flex items-center space-x-4">
+      <CardContent className="p-4">
+        <div className="flex items-center space-x-4">
         {/* File Preview/Icon */}
         <div className="flex-shrink-0">
           {imagePreview ? (
@@ -126,15 +128,7 @@ export function FilePreview({ file, validation, onRemove }: FilePreviewProps) {
                 </span>
                 <span className="font-medium">{file.progress}%</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div
-                  className={cn(
-                    "h-2 rounded-full transition-all duration-300",
-                    file.status === 'uploading' ? "bg-blue-500" : "bg-medical-primary"
-                  )}
-                  style={{ width: `${file.progress}%` }}
-                />
-              </div>
+              <Progress value={file.progress} className="h-2" />
             </div>
           )}
 
@@ -184,7 +178,8 @@ export function FilePreview({ file, validation, onRemove }: FilePreviewProps) {
             <X className="h-4 w-4" />
           </Button>
         </div>
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
