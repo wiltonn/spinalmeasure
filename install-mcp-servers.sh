@@ -6,8 +6,8 @@ claude mcp add sequential-thinking -s user -- npx -y u/modelcontextprotocol/serv
 # Filesystem
 claude mcp add filesystem -s user -- npx -y u/modelcontextprotocol/server-filesystem ~/Dev/projects
 
-# Puppeteer
-claude mcp add puppeteer -s user -- npx -y @modelcontextprotocol/server-puppeteer
+# Playright
+claude mcp add playwright npx @playwright/mcp@latest
 
 # Web Fetching
 claude mcp add fetch -s user -- npx -y @kazuph/mcp-fetch
@@ -17,6 +17,9 @@ claude mcp add shadcn-ui-mcp-server -s user -- npx -y @jpisnice/shadcn-ui-mcp-se
 
 # Context7 MCP
 claude mcp add context7 -- npx -y @upstash/context7-mcp
+
+# Neon
+claude mcp add --transport http neon https://mcp.neon.tech/mcp
 
 # Check whats been installed
 claude mcp list
